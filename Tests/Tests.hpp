@@ -44,13 +44,13 @@ TEST(Sorter, test_1)
 TEST(Sorter, test_2)
 {
     Generator generator{false};
-    generator.Generate(100, 5, "./GeneratedData/test_digits.txt");
+    generator.Generate(100, 5, "./GeneratedData/test_symbols.txt");
 
     StringsSorter sorter(10);
-    sorter.Sort("./GeneratedData/test_digits.txt", "./GeneratedData/test_digits_sorted.txt");
+    sorter.Sort("./GeneratedData/test_symbols.txt", "./GeneratedData/test_symbols_sorted.txt");
 
-    std::ifstream sorted("./GeneratedData/test_digits_sorted.txt");
-    std::ifstream unsorted("./GeneratedData/test_digits.txt");
+    std::ifstream sorted("./GeneratedData/test_symbols_sorted.txt");
+    std::ifstream unsorted("./GeneratedData/test_symbols.txt");
 
     std::string line;
     std::vector<std::string> auto_sorted_buffer;
