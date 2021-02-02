@@ -1,0 +1,25 @@
+FROM ubuntu:20.04
+LABEL maintainer="vlad.mark-2013@mail.ru"
+#Timezone
+ENV TZ=Europe/Moscow
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+#Update
+RUN apt-get update
+#C++ base
+RUN apt-get install -y git cmake libgtest-dev build-essential gcc-10 g++-10 
+RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 100 --slave /usr/bin/g++ g++ /usr/bin/g++-10 --slave /usr/bin/gcov gcov /usr/bin/gcov-10 && update-alternatives --config gcc
+#C++ packages
+RUN apt-get install -y nlohmann-json3-dev libboost-all-dev libboost-program-options-dev libgtest-dev libgoogle-glog-dev
+RUN git clone https://github.com/Qihoo360/evpp && \
+    cd evpp && \
+    git submodule update --init --recursive &&\
+    mkdir -p build && cd build
+RUN cd /evpp/build && \
+    cmake .. &&\
+    make -j8 &&\
+    make install
+#Common tools
+RUN apt-get install -y vim netcat
+RUN echo 'PS1="\\t🎅\[\e[33;41m\][\[\e[m\]\[\e[32m\]\u\[\e[m\]\[\e[36m\]@\[\e[m\]\[\e[34m\]\h\[\e[m\]\[\e[33;41m\]]\[\e[m\]🎄 \n \w: "' > ~/.bashrc
+WORKDIR /app
+CMD bash

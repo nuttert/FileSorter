@@ -1,0 +1,10 @@
+version: '3'
+
+services:
+  cpp:
+    container_name: cpp
+    build: 
+      context: ./
+      dockerfile: DockerFile
+    volumes: 
+      - ./:/app
