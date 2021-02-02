@@ -10,9 +10,9 @@ int main()
     using namespace std::string_literals;
 
     Generator generator{true};
-    generator.Generate(10000, 5, "./GeneratedData/test_digits.txt");
+    generator.Generate(10000000, 100, "./GeneratedData/test_digits.txt");
 
-    StringsSorter sorter(3);
+    StringsSorter sorter(1000);
     sorter.Sort("./GeneratedData/test_digits.txt", "./GeneratedData/test_digits_sorted.txt");
 
     return 0;

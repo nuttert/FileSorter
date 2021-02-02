@@ -6,5 +6,11 @@ services:
     build: 
       context: ./
       dockerfile: DockerFile
+    deploy:
+      resources:
+        limits:
+          memory: 500MB
+        reservations:
+          memory: 200MB
     volumes: 
       - ./:/app

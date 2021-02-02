@@ -24,7 +24,7 @@ find_package(Boost 1.67 REQUIRED)
 if(${TEST_MODE})
   add_executable(
     ${PROJECT_NAME} 
-    ${CMAKE_SOURCE_DIR}/test/main.cpp
+    ${CMAKE_SOURCE_DIR}/Tests/main.cpp
   )
 else()
   add_executable(
@@ -52,6 +52,5 @@ target_link_libraries(${PROJECT_NAME}
     ${Boost_BOTH_LIBRARIES} 
     ${PROJECT_NAME}_Generator
     ${PROJECT_NAME}_Sorter
-    Threads::Threads 
-    evpp
+    Threads::Threads
 )

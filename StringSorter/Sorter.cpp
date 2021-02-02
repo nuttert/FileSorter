@@ -9,6 +9,7 @@
 #include <fstream>
 #include <random>
 #include <thread>
+#include <limits>
 
 namespace
 {
@@ -22,6 +23,15 @@ namespace
         file.seekg(0, std::ios::beg);
 
         return {file_size, line_length};
+    }
+
+    std::fstream &GotoLine(std::fstream &file, unsigned int num)
+    {
+        for (int i = 0; i < num - 1; ++i)
+        {
+            file.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        }
+        return file;
     }
 } // namespace
 
@@ -64,6 +74,8 @@ void StringsSorter::BasicSort(const std::string &input_filename, const std::stri
 void StringsSorter::Sort(const std::string &input_filename, const std::string &output_filename)
 {
     using namespace std::chrono_literals;
+    static const std::string kTempFilename = "GeneratedData/temp_file.txt";
+
     std::cout << "Start sorting" << std::endl;
     std::cout << "Waiting..." << std::endl;
 
@@ -77,7 +89,7 @@ void StringsSorter::Sort(const std::string &input_filename, const std::string &o
     std::string line_2;
     size_t bucket_size = buffer_size_;
     std::string source_filename = output_filename;
-    std::string dest_filename = "GeneratedData/temp_file.txt";
+    std::string dest_filename = kTempFilename;
     const auto [file_size, line_length] = GetFileSizeAndLineLength(file);
 
     if (!file.is_open())
@@ -86,11 +98,11 @@ void StringsSorter::Sort(const std::string &input_filename, const std::string &o
 
     while (bucket_size * line_length <= file_size)
     {
-        std::ifstream carriage_1(source_filename);
-        std::ifstream carriage_2(source_filename);
+        std::fstream carriage_1(source_filename);
+        std::fstream carriage_2(source_filename);
         std::ofstream temp_file(dest_filename);
 
-        carriage_2.seekg((line_length + 1) * bucket_size);
+        GotoLine(carriage_2, bucket_size+1);
 
         while (carriage_1 ||
                carriage_2)
@@ -106,8 +118,8 @@ void StringsSorter::Sort(const std::string &input_filename, const std::string &o
             {
                 if (firstReading)
                 {
-                    getline(carriage_1, line_1);
-                    getline(carriage_2, line_2);
+                    std::getline(carriage_1, line_1);
+                    std::getline(carriage_2, line_2);
                     firstReading = false;
                     if (line_1.empty() || line_2.empty())
                         break;
@@ -129,15 +141,15 @@ void StringsSorter::Sort(const std::string &input_filename, const std::string &o
 
             if (!firstReading)
             {
-                carriage_1.seekg(-line_length - 1, std::ios::cur);
-                carriage_2.seekg(-line_length - 1, std::ios::cur);
+                carriage_1.seekg(-line_1.size() - 1, std::ios::cur);
+                carriage_2.seekg(-line_2.size() - 1, std::ios::cur);
             }
 
             while (carriage_1_line_index < bucket_size)
             {
                 if (!carriage_1)
                     break;
-                getline(carriage_1, line_1);
+                std::getline(carriage_1, line_1);
                 if (line_1.empty())
                     break;
 
@@ -165,8 +177,8 @@ void StringsSorter::Sort(const std::string &input_filename, const std::string &o
             carriage_1_line_index = 0;
             carriage_2_line_index = 0;
 
-            carriage_1.seekg((line_length + 1) * bucket_size, std::ios::cur);
-            carriage_2.seekg((line_length + 1) * bucket_size, std::ios::cur);
+            GotoLine(carriage_1, bucket_size+1);
+            GotoLine(carriage_2, bucket_size+1);
         }
 
         std::swap(source_filename, dest_filename);
@@ -179,9 +191,11 @@ void StringsSorter::Sort(const std::string &input_filename, const std::string &o
     }
     std::swap(source_filename, dest_filename);
     std::cout << dest_filename << " " << output_filename;
-    if (counter % 2 == 1)
+    if (counter % 2 == 1){
         std::rename(dest_filename.c_str(), output_filename.c_str());
+    }
+    std::remove(kTempFilename.c_str());
 
-    std::cout << "Successfully sorted: "<< output_filename << std::endl;
+    std::cout << "Successfully sorted: " << output_filename << std::endl;
     file.close();
 }

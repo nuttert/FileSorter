@@ -12,6 +12,7 @@ Generator::Generator(const bool isDigits) : isDigits_(isDigits)
 
 void Generator::Generate(const size_t lines, const size_t length, const std::string &filename)
 {
+    static const auto kBufferSize = 1000000;
     std::ofstream out;
     out.open(filename);
 
@@ -31,7 +32,7 @@ void Generator::Generate(const size_t lines, const size_t length, const std::str
             std::generate_n(str.begin(), length, randchar);
             strfile += str + "\n";
 
-            if (i % 10000000 == 0)
+            if (i % kBufferSize == 0)
             {
                 out << strfile;
                 strfile = "";
